@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.vini2003.$nameLowercase.$nameTitle"
+      "dev.vini2003.$nameLowercase.$nameTitleShort"
     ],
     "client": [
-      "dev.vini2003.$nameLowercase.$nameTitleClient"
+      "dev.vini2003.$nameLowercase.$nameTitleShortClient"
     ]
   },
   "mixins": [

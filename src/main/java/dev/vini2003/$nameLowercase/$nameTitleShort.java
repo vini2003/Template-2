@@ -5,7 +5,7 @@ import dev.vini2003.hammer.preset.HP;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 
-public class $nameTitle implements ModInitializer {
+public class $nameTitleShort implements ModInitializer {
 	public static final String ID = "$nameLowercase";
 	
 	public static Identifier id(String path) {
