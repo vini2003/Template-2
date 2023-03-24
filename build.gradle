@@ -1,0 +1,175 @@
+plugins {
+	// Fabric Loom
+	id "fabric-loom"
+
+	// Maven Publish
+	id "maven-publish"
+
+	// Licenser
+	id "org.cadixdev.licenser"
+}
+
+allprojects {
+	apply plugin: 'org.cadixdev.licenser'
+
+	license {
+		header = rootProject.file("LICENSE")
+
+		ignoreFailures = true
+	}
+}
+
+dependencies {
+	subprojects.forEach {
+		implementation project(path: it.path, configuration: "namedElements")
+	}
+}
+
+allprojects {
+	apply plugin: "fabric-loom"
+	apply plugin: "maven-publish"
+
+	group = projectGroup
+	version = projectVersion
+
+	java {
+		sourceCompatibility = JavaVersion.VERSION_17
+		targetCompatibility = JavaVersion.VERSION_17
+
+		withSourcesJar()
+	}
+
+	loom {
+		runs {
+			client {
+				client()
+				setConfigName("Minecraft Client ($projectName)")
+				ideConfigGenerated(true)
+				runDir("run")
+			}
+
+			server {
+				server()
+				setConfigName("Minecraft Server ($projectName)")
+				ideConfigGenerated(true)
+				runDir("run")
+			}
+		}
+
+		accessWidenerPath.set(file("src/main/resources/cannibalism.accesswidener"))
+	}
+
+	repositories {
+		// vini2003
+		maven {
+			name = "vini2003"
+			url = "https://maven.vini2003.dev/releases"
+		}
+
+		// Fabric
+		maven {
+			name = "FabricMC"
+			url = "https://maven.fabricmc.net/"
+		}
+
+		// JitPack
+		maven {
+			name = "JitPack"
+			url = "https://jitpack.io"
+		}
+
+		// Cafeteria
+		maven {
+			url = "https://maven.cafeteria.dev"
+			content {
+				includeGroup "dev.cafeteria"
+			}
+		}
+
+		// Ladysnake
+		maven {
+			name = "Ladysnake Mods"
+			url = "https://ladysnake.jfrog.io/artifactory/mods"
+			content {
+				includeGroup "io.github.ladysnake"
+				includeGroupByRegex "io\\.github\\.onyxstudios.*"
+			}
+		}
+	}
+
+	configurations.all {
+		exclude(module: "colonel")
+	}
+
+	dependencies {
+		// Minecraft
+		minecraft("com.mojang:minecraft:${minecraftVersion}")
+
+		// Yarn
+		mappings("net.fabricmc:yarn:${yarnVersion}:v2")
+
+		// Fabric Loader
+		modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+
+		// Fabric API
+		modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
+
+		// Hammer Core
+		modImplementation("dev.vini2003:hammer-core:${hammerVersion}")
+		include("dev.vini2003:hammer-core:${hammerVersion}")
+
+		// Hammer Chat
+		modImplementation("dev.vini2003:hammer-chat:${hammerVersion}")
+		include("dev.vini2003:hammer-chat:${hammerVersion}")
+
+		// Hammer Emoji
+		modImplementation("dev.vini2003:hammer-emoji:${hammerVersion}")
+		include("dev.vini2003:hammer-emoji:${hammerVersion}")
+
+		// Hammer Util
+		modImplementation("dev.vini2003:hammer-util:${hammerVersion}")
+		include("dev.vini2003:hammer-util:${hammerVersion}")
+
+		// Hammer Preset
+		modImplementation("dev.vini2003:hammer-preset:${hammerVersion}")
+		include("dev.vini2003:hammer-preset:${hammerVersion}")
+
+		// LuckPerms
+		modImplementation("net.luckperms:api:${luckPermsApiVersion}")
+		modApi("net.luckperms:api:${luckPermsApiVersion}")
+	}
+
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				artifactId = archivesBaseName
+				groupId = projectGroup
+				version = projectVersion
+
+				artifact(remapJar) {
+					builtBy remapJar
+				}
+
+				artifact(sourcesJar) {
+					builtBy remapSourcesJar
+				}
+			}
+		}
+
+		repositories {
+			maven {
+				name = "vini2003"
+				url = "https://maven.vini2003.dev/releases"
+
+				credentials {
+					username = System.getenv("MVN_USERNAME")
+					password = System.getenv("MVN_TOKEN")
+				}
+
+				authentication {
+					basic(BasicAuthentication)
+				}
+			}
+		}
+	}
+}
