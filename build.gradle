@@ -56,7 +56,7 @@ allprojects {
 			}
 		}
 
-		accessWidenerPath.set(file("src/main/resources/cannibalism.accesswidener"))
+		accessWidenerPath.set(file("src/main/resources/$nameLowercase.accesswidener"))
 	}
 
 	repositories {
